@@ -89,8 +89,8 @@ Middleware shelfLimiter({
       // Extract client identifier (IP by default)
       final clientIdentifier = options?.clientIdentifierExtractor != null
           ? options!.clientIdentifierExtractor!(request)
-          : (request.context['shelf.io.connection_info'] as HttpConnectionInfo)
-              .remoteAddress
+          : ((request.context['shelf.io.connection_info']) as dynamic)
+              ?.remoteAddress
               .address;
 
       // Check if the client has exceeded the rate limit
