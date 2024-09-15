@@ -18,11 +18,17 @@
 
 ## 🌟 Features
 
-- **🔧 Customizable Rate Limits**: Effortlessly set the maximum number of requests and time window to suit your needs.
-- **📜 Custom Headers**: Add and manage custom headers in your responses to enhance control and transparency.
-- **🚀 Custom Responses**: Craft personalized responses when the rate limit is exceeded, improving user feedback.
-- **🔗 Easy Integration**: Integrate seamlessly into your existing Shelf pipeline with minimal setup, so you can focus on building features.
+| **Feature**                     | **Description**  |
+|---------------------------------|------------------|
+| **🔧 Customizable Rate Limits** | Effortlessly set the maximum number of requests and time window to suit your needs. Define global limits or different limits for specific endpoints to control how often clients can access your API. |
+| **📜 Custom Headers**           | Add and manage custom headers in your responses to enhance control and transparency. |
+| **🚀 Custom Responses**         | Looking for more control? You’ve got it! Customize and send your own response when the API limit is exceeded. |
+| **🔗 Easy Integration**         | Integrate seamlessly into your existing Shelf pipeline with minimal setup. Quickly apply rate limiting and focus on building the features that matter most without worrying about complex configurations. |
+| **🌐 Endpoint-Specific Limits** | Set different rate limits for different endpoints. Protect high-traffic routes with stricter limits while allowing more leniency on less critical parts of your API. |
 
+---
+
+This format provides a clear and organized way to present the features, making it easy for readers to understand the capabilities of `shelf_limiter` at a glance.
 ## Installation
 
 Add `shelf_limiter` to your `pubspec.yaml` file:
