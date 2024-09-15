@@ -1,30 +1,24 @@
-# This file configures the static analysis results for your project (errors,
-# warnings, and lints).
-#
-# This enables the 'recommended' set of lints from `package:lints`.
-# This set helps identify many issues that may lead to problems when running
-# or consuming Dart code, and enforces writing Dart using a single, idiomatic
-# style and format.
-#
-# If you want a smaller set of lints you can change this to specify
-# 'package:lints/core.yaml'. These are just the most critical lints
-# (the recommended set includes the core lints).
-# The core lints are also what is used by pub.dev for scoring packages.
-
 include: package:lints/recommended.yaml
 
-# Uncomment the following section to specify additional rules.
-
-# linter:
-#   rules:
-#     - camel_case_types
-
-# analyzer:
-#   exclude:
-#     - path/to/excluded/files/**
-
-# For more information about the core and recommended set of lints, see
-# https://dart.dev/go/core-lints
-
-# For additional information about configuring this file, see
-# https://dart.dev/guides/language/analysis-options
+linter:
+  rules:
+    - require_trailing_commas  # Requires trailing commas for better darty style
+    - public_member_api_docs # All Public API element should be documented
+    - always_declare_return_types  # Enforces return types on all functions
+    - always_put_control_body_on_new_line  # Ensures control bodies (if, for, etc.) are on a new line
+    - annotate_overrides  # Enforces @override annotation on overridden methods
+    - avoid_empty_else  # Avoids empty else blocks
+    - avoid_annotating_with_dynamic  # Avoids the use of dynamic type annotation
+    - avoid_function_literals_in_foreach_calls  # Avoids function literals in forEach calls
+    - avoid_types_on_closure_parameters  # Avoids explicit types on closure parameters
+    - camel_case_types  # Enforces camel case for type names
+    - constant_identifier_names  # Enforces constant identifier names to be uppercase
+    - library_prefixes  # Enforces library prefixes
+    - non_constant_identifier_names  # Enforces non-constant identifiers to use lowerCamelCase
+    - prefer_single_quotes  # Prefers single quotes for strings
+    - prefer_final_fields  # Prefers final for fields that are not reassigned
+    - prefer_const_constructors  # Prefers const constructors
+    - avoid_redundant_argument_values  # Avoids redundant argument values in method calls
+    - avoid_unnecessary_containers  # Avoids unnecessary containers in widget trees
+    - prefer_is_empty  # Prefers `isEmpty` over `length == 0`
+    - prefer_is_not_empty  # Prefers `isNotEmpty` over `length > 0`
