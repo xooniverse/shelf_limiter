@@ -1,10 +1,22 @@
 name: shelf_limiter
-description: "Rate limiter for package:shelf"
+description: A powerful and highly customizable rate limiter for shelf library, allowing you to easily manage and control request rates in your Dart server.
 version: 1.0.0
 repository: https://github.com/xooniverse/shelf_limiter
+issue_tracker: https://github.com/xooniverse/shelf_limiter/issues
+documentation: https://pub.dev/documentation/shelf_limiter/latest
+topics:
+  - rate-limiting
+  - shelf
+  - dart
+  - throttle
+  - middleware
+
+funding:
+  - https://buymeacoffee.com/heysreelal
+  - https://paypal.me/sreelalts
 
 environment:
-  sdk: ^3.5.2
+  sdk: ">=3.0.0 <4.0.0"
 
 dependencies:
   shelf: ^1.4.2
