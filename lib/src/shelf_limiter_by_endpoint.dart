@@ -3,15 +3,16 @@ part of '../shelf_limiter.dart';
 /// A middleware that applies rate limiting based on specific endpoint limits.
 ///
 /// This middleware allows developers to set different rate limits for different
-/// API endpoints. You can also provide a default rate limiter if some endpoints
-/// don't have custom limits.
+/// API endpoints and supports wildcard path matching for more flexible rate limiting.
+/// You can also provide a default rate limiter if some endpoints don't have custom limits.
 ///
 /// If the client exceeds the allowed requests for an endpoint, the middleware
 /// responds with a `429 Too Many Requests` status or a custom response if specified.
 ///
 /// ## Parameters:
-/// - `endpointLimits`: A map where the keys are endpoint paths (as strings) and
-///   the values are `RateLimiterOptions` specifying rate limits for each endpoint.
+/// - `endpointLimits`: A map where the keys are endpoint paths (as strings), including
+///   patterns with wildcards (e.g., `/api/v1/*`), and the values are `RateLimiterOptions`
+///   specifying rate limits for each endpoint or pattern.
 /// - `defaultOptions`: Optional. If provided, this applies rate limiting for any
 ///   endpoint that isn't explicitly listed in `endpointLimits`.
 ///
@@ -31,6 +32,10 @@ part of '../shelf_limiter.dart';
 ///     '/api/data': RateLimiterOptions(
 ///       maxRequests: 10,
 ///       windowSize: Duration(minutes: 1),
+///     ),
+///     '/api/v1/*': RateLimiterOptions( // Wildcard path matching
+///       maxRequests: 15,
+///       windowSize: Duration(minutes: 2),
 ///     ),
 ///   },
 /// );
@@ -57,9 +62,13 @@ part of '../shelf_limiter.dart';
 ///       maxRequests: 10,
 ///       windowSize: Duration(minutes: 1),
 ///     ),
+///     '/api/v1/*': RateLimiterOptions( // Wildcard path matching
+///       maxRequests: 15,
+///       windowSize: Duration(minutes: 2),
+///     ),
 ///   },
 ///   defaultOptions: RateLimiterOptions(
-///     maxRequests: 15,
+///     maxRequests: 20,
 ///     windowSize: Duration(minutes: 5),
 ///   ),
 /// );
@@ -75,18 +84,20 @@ part of '../shelf_limiter.dart';
 /// rate limit is exceeded for the `/api/resource` endpoint.
 ///
 /// ## Notes:
-/// - The `endpointLimits` map allows you to configure different rate limits for each endpoint.
-/// - The `defaultOptions` is optional but useful for covering any endpoints that aren't listed in `endpointLimits`.
+/// - The `endpointLimits` map supports wildcard path matching to apply rate limits to
+///   multiple endpoints with similar patterns (e.g., `/api/v1/*`).
+/// - The `defaultOptions` is optional but useful for covering any endpoints that aren't
+///   listed in `endpointLimits`.
 /// - If the `clientIdentifierExtractor` is not specified, the client's IP address is used by default.
 Middleware shelfLimiterByEndpoint({
   required Map<String, RateLimiterOptions> endpointLimits,
   RateLimiterOptions? defaultOptions,
 }) {
-  // Create and store rate limiters for each endpoint when the middleware is initialized
+  // Create and store rate limiters for each endpoint pattern when the middleware is initialized
   final rateLimiters = <String, _RateLimiter>{};
 
-  endpointLimits.forEach((path, options) {
-    rateLimiters[path] = _RateLimiter(
+  endpointLimits.forEach((pattern, options) {
+    rateLimiters[pattern] = _RateLimiter(
       maxRequests: options.maxRequests,
       rateLimitDuration: options.windowSize,
     );
@@ -102,7 +113,18 @@ Middleware shelfLimiterByEndpoint({
   return (Handler innerHandler) {
     return (Request request) async {
       final path = '/${request.url.path}';
-      final rateLimiter = rateLimiters[path] ?? defaultRateLimiter;
+      _RateLimiter? rateLimiter;
+
+      // Find the best matching rate limiter based on path patterns
+      for (final pattern in rateLimiters.keys) {
+        if (_pathMatchesPattern(path, pattern)) {
+          rateLimiter = rateLimiters[pattern];
+          break;
+        }
+      }
+
+      // Use the default rate limiter if no specific match is found
+      rateLimiter ??= defaultRateLimiter;
 
       if (rateLimiter == null) {
         // No rate limiter options available; proceed without rate limiting
@@ -110,7 +132,9 @@ Middleware shelfLimiterByEndpoint({
       }
 
       // Get the appropriate RateLimiterOptions (used for client identifier and headers)
-      final options = endpointLimits[path] ?? defaultOptions!;
+      final options = endpointLimits[rateLimiters.keys
+              .firstWhere((p) => _pathMatchesPattern(path, p))] ??
+          defaultOptions!;
 
       return _handleLimiting(
         rateLimiter: rateLimiter,
