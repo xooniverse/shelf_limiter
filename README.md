@@ -24,18 +24,15 @@
 | **📜 Custom Headers**           | Add and manage custom headers in your responses to enhance control and transparency. |
 | **🚀 Custom Responses**         | Looking for more control? You’ve got it! Customize and send your own response when the API limit is exceeded. |
 | **🔗 Easy Integration**         | Integrate seamlessly into your existing Shelf pipeline with minimal setup. Quickly apply rate limiting and focus on building the features that matter most without worrying about complex configurations. |
-| **🌐 Endpoint-Specific Limits** | Set different rate limits for different endpoints. Protect high-traffic routes with stricter limits while allowing more leniency on less critical parts of your API. |
+| **🌐 Endpoint-Specific Limits** | Set different rate limits for different endpoints. Use wildcard patterns (e.g., `/api/v1/*`) to apply rate limits to multiple routes, allowing you to protect high-traffic routes with stricter limits while allowing more leniency on less critical parts of your API. |
 
----
-
-This format provides a clear and organized way to present the features, making it easy for readers to understand the capabilities of `shelf_limiter` at a glance.
 ## Installation
 
 Add `shelf_limiter` to your `pubspec.yaml` file:
 
 ```yaml
 dependencies:
-  shelf_limiter: ^1.0.0
+  shelf_limiter: <latest>
 ```
 
 Then run:
@@ -168,7 +165,6 @@ Response _echoRequest(Request request) => Response.ok('Request received');
 
 When you want to fine-tune your rate limiting strategy and avoid a one-size-fits-all approach, `shelfLimiterByEndpoint` is your best friend. This middleware allows you to set unique rate limits for different endpoints, giving you the power to tailor restrictions based on the needs of each route. Think of it as customizing speed limits for different roads in your neighborhood—some streets are just busier than others!
 
-
 ### Example - Custom Limits for Different Routes:
 
 Here's how you can make your API as efficient as a well-oiled machine with `shelfLimiterByEndpoint`:
@@ -189,6 +185,10 @@ void main() async {
         maxRequests: 20,
         windowSize: const Duration(minutes: 1),
       ),
+      '/api/v1/*': RateLimiterOptions( // Wildcard path matching
+        maxRequests: 15,
+        windowSize: const Duration(minutes: 2),
+      ),
     },
     defaultOptions: RateLimiterOptions(
       maxRequests: 100,
@@ -206,7 +206,7 @@ void main() async {
 Response _echoRequest(Request request) => Response.ok('Request received');
 ```
 
-In this advanced example, the `/auth` endpoint has a rate limit of 5 requests per minute, the `/data` endpoint allows up to 20 requests, and all other endpoints follow the default limit of 100 requests per minute.
+In this advanced example, the `/auth` endpoint has a rate limit of 5 requests per minute, the `/data` endpoint allows up to 20 requests, and all other endpoints following the `/api/v1/*` pattern are limited to 15 requests per 2 minutes. Any endpoint not explicitly listed follows the default limit of 100 requests per minute.
 
 ## ⚙️ Configuration
 
