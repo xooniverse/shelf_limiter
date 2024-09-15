@@ -17,10 +17,10 @@ void main() {
           .addMiddleware(
             shelfLimiter(
               maxRequests: 2,
-              windowSize: Duration(seconds: 10),
+              windowSize: const Duration(seconds: 10),
             ),
           )
-          .addHandler((Request request) => Response.ok('OK'));
+          .addHandler((request) => Response.ok('OK'));
 
       // Start the server and setup the HTTP client
       server = await shelf_io.serve(
@@ -72,7 +72,7 @@ void main() {
       // Set up custom options
       final options = RateLimiterOptions(
         headers: {'X-Custom-Header': 'Rate Limited'},
-        onRateLimitExceeded: (Request request) async {
+        onRateLimitExceeded: (request) async {
           return Response(
             429,
             body: 'Custom rate limit exceeded message',
@@ -85,11 +85,11 @@ void main() {
           .addMiddleware(
             shelfLimiter(
               maxRequests: 2,
-              windowSize: Duration(seconds: 10),
+              windowSize: const Duration(seconds: 10),
               options: options,
             ),
           )
-          .addHandler((Request request) => Response.ok('OK'));
+          .addHandler((request) => Response.ok('OK'));
 
       // Restart the server with new handler
       server = await shelf_io.serve(

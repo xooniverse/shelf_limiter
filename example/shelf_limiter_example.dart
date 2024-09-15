@@ -11,17 +11,17 @@ void main() async {
     headers: {
       'X-Custom-Header': 'Rate limited', // Custom header to add to responses
     },
-    onRateLimitExceeded: (Request request) async {
+    onRateLimitExceeded: (request) async {
       // Custom message to return when the client exceeds the rate limit
       // Customize it as much as you want :)
       return Response(
         429,
         body: jsonEncode({
-          "status": false,
-          "message": "Uh, hm! Wait a minute, that's a lot of request.",
+          'status': false,
+          'message': "Uh, hm! Wait a minute, that's a lot of request.",
         }),
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
       );
     },
@@ -30,7 +30,7 @@ void main() async {
   // Create the rate limiter middleware with a max of 5 requests per 1 minute window
   final limiter = shelfLimiter(
     maxRequests: 5,
-    windowSize: Duration(minutes: 1),
+    windowSize: const Duration(minutes: 1),
     options: options, // Apply custom options
   );
 
