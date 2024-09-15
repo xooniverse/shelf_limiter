@@ -1,8 +1,10 @@
-/// Support for doing something awesome.
-///
-/// More dartdocs go here.
 library;
 
-export 'src/shelf_limiter_base.dart';
+import 'dart:async';
+import 'dart:collection';
+import 'dart:io';
+import 'package:shelf/shelf.dart';
 
-// TODO: Export any libraries intended for clients of this package.
+part 'src/shelf_limiter_base.dart';
+part 'src/rate_limiter.dart';
+part 'src/options.dart';
