@@ -105,3 +105,4 @@ part 'src/classes/options.dart';
 part 'src/methods/response_crafter.dart';
 part 'src/methods/handle_limiting.dart';
 part 'src/methods/path_matcher.dart';
+part 'src/utils/utils.dart';
