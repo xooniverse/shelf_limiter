@@ -1,3 +1,8 @@
+# 2.0.0
+
+- Added `shelfLimiterByEndpoint` for implementing different rate limits for different endpoints.
+- Breaking: Updated `shelfLimiter` definition.
+
 # 1.0.2
 
 - Added more documentations

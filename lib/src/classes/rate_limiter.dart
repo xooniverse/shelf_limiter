@@ -1,4 +1,4 @@
-part of '../shelf_limiter.dart';
+part of '../../shelf_limiter.dart';
 
 /// A simple rate limiter that tracks and enforces request limits for clients.
 ///
