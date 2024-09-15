@@ -6,7 +6,7 @@
 ![Pub Version](https://img.shields.io/pub/v/shelf_limiter)
 ![License](https://img.shields.io/github/license/xooniverse/shelf_limiter)
 
-<a href="https://github.com/xooniverse/televerse/">
+<a href="https://github.com/xooniverse/shelf_limiter/">
   <img src="https://img.shields.io/badge/Shoot%20A%20Star%20/%20GitHub%20Repo-100000?style=for-the-badge&logo=github&logoColor=white"/>
 </a>
 
