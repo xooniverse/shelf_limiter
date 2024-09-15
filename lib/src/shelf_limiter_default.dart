@@ -74,93 +74,20 @@ part of '../shelf_limiter.dart';
 /// - A custom 429 message is returned when the limit is exceeded.
 /// - Custom headers (like `X-Custom-Header`) are added to the response.
 /// Middleware to limit the rate of requests from clients.
-Middleware shelfLimiter({
-  required int maxRequests,
-  required Duration windowSize,
-  RateLimiterOptions? options,
-}) {
+Middleware shelfLimiter(RateLimiterOptions options) {
   final rateLimiter = _RateLimiter(
-    maxRequests: maxRequests,
-    rateLimitDuration: windowSize,
+    maxRequests: options.maxRequests,
+    rateLimitDuration: options.windowSize,
   );
 
   return (Handler innerHandler) {
     return (Request request) async {
-      // Extract client identifier (IP by default)
-      final clientIdentifier = options?.clientIdentifierExtractor != null
-          ? options!.clientIdentifierExtractor!(request)
-          : ((request.context['shelf.io.connection_info']) as dynamic)
-              ?.remoteAddress
-              .address;
-
-      // Check if the client has exceeded the rate limit
-      if (!rateLimiter.isAllowed(clientIdentifier)) {
-        // Retry after the window resets
-        final retryAfter = windowSize.inSeconds;
-
-        // If a custom response is provided, apply rate limit headers to it
-        if (options?.onRateLimitExceeded != null) {
-          final customResponse = await options!.onRateLimitExceeded!(request);
-
-          return _craftResponse(
-            customResponse.change(
-              headers: options.headers,
-            ),
-            maxRequests,
-            retryAfter,
-          );
-        }
-
-        // Default 429 response with custom rate limit headers
-        return _craftResponse(
-          Response(
-            429,
-            body: 'Too many requests, please try again later.',
-            headers: options?.headers ?? {},
-          ),
-          maxRequests,
-          retryAfter,
-        );
-      }
-
-      // Calculate remaining requests and reset time for rate limit headers
-      final now = DateTime.now();
-      final requestTimes = rateLimiter._clientRequestTimes[clientIdentifier]!;
-      final resetTime =
-          windowSize.inSeconds - now.difference(requestTimes.first).inSeconds;
-      final remainingRequests = maxRequests - requestTimes.length;
-
-      // Proceed with the request and attach rate limiting headers to the response
-      final response = await innerHandler(request);
-
-      return _craftResponse(
-        response,
-        maxRequests,
-        resetTime,
-        remainingRequests: remainingRequests,
+      return _handleLimiting(
+        rateLimiter: rateLimiter,
+        options: options,
+        request: request,
+        innerHandler: innerHandler,
       );
     };
   };
-}
-
-/// Adds rate limit related headers to the response.
-///
-/// [response] is the original response object.
-/// [maxRequests] is the maximum number of requests allowed in the window.
-/// [retryAfter] is the number of seconds after which the client can retry.
-/// [remainingRequests] is the number of requests remaining in the current window.
-Response _craftResponse(
-  Response response,
-  int maxRequests,
-  int retryAfter, {
-  int? remainingRequests,
-}) {
-  final responseHeaders = {
-    ...response.headers,
-    'Retry-After': retryAfter.toString(),
-    'X-RateLimit-Limit': maxRequests.toString(),
-    'X-RateLimit-Remaining': remainingRequests?.toString() ?? '0',
-    'X-RateLimit-Reset': retryAfter.toString(),
-  };
-  return response.change(headers: responseHeaders);
 }

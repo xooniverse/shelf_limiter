@@ -13,13 +13,13 @@ void main() {
 
     setUp(() async {
       // Create a simple handler that just responds with 'OK'
+      final options = const RateLimiterOptions(
+        maxRequests: 2,
+        windowSize: Duration(seconds: 10),
+      );
+
       handler = const Pipeline()
-          .addMiddleware(
-            shelfLimiter(
-              maxRequests: 2,
-              windowSize: const Duration(seconds: 10),
-            ),
-          )
+          .addMiddleware(shelfLimiter(options))
           .addHandler((request) => Response.ok('OK'));
 
       // Start the server and setup the HTTP client
@@ -71,6 +71,8 @@ void main() {
     test('Includes custom headers and responses', () async {
       // Set up custom options
       final options = RateLimiterOptions(
+        maxRequests: 2,
+        windowSize: const Duration(seconds: 10),
         headers: {'X-Custom-Header': 'Rate Limited'},
         onRateLimitExceeded: (request) async {
           return Response(
@@ -82,13 +84,7 @@ void main() {
       );
 
       handler = const Pipeline()
-          .addMiddleware(
-            shelfLimiter(
-              maxRequests: 2,
-              windowSize: const Duration(seconds: 10),
-              options: options,
-            ),
-          )
+          .addMiddleware(shelfLimiter(options))
           .addHandler((request) => Response.ok('OK'));
 
       // Restart the server with new handler

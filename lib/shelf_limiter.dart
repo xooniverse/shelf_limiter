@@ -58,6 +58,9 @@ import 'dart:async';
 import 'dart:collection';
 import 'package:shelf/shelf.dart';
 
-part 'src/shelf_limiter_base.dart';
-part 'src/rate_limiter.dart';
-part 'src/options.dart';
+part 'src/shelf_limiter_default.dart';
+part 'src/shelf_limiter_by_endpoint.dart';
+part 'src/classes/rate_limiter.dart';
+part 'src/classes/options.dart';
+part 'src/methods/response_crafter.dart';
+part 'src/methods/handle_limiting.dart';
