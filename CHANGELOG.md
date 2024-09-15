@@ -1,3 +1,8 @@
+# 2.0.1
+
+- Path matching could possibly throw cause an internal error
+- Fixed the matching logic
+
 # 2.0.0
 
 - Added `shelfLimiterByEndpoint` for implementing different rate limits for different endpoints.
