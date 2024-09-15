@@ -132,9 +132,10 @@ Middleware shelfLimiterByEndpoint({
       }
 
       // Get the appropriate RateLimiterOptions (used for client identifier and headers)
-      final options = endpointLimits[rateLimiters.keys
-              .firstWhere((p) => _pathMatchesPattern(path, p))] ??
-          defaultOptions!;
+      final match = rateLimiters.keys.firstWhereOrNull(
+        (p) => _pathMatchesPattern(path, p),
+      );
+      final options = endpointLimits[match] ?? defaultOptions!;
 
       return _handleLimiting(
         rateLimiter: rateLimiter,
